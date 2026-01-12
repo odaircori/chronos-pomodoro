@@ -7,6 +7,5 @@ createRoot(document.getElementById('root')!).render(
   <StrictMode>
     <Heading attr='StringNormal' attr2={1234}>Olá Mundo do React 1</Heading>
     <App/>
-    <h1>Olá mundo</h1>
   </StrictMode>,
 )
