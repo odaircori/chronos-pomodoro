@@ -1,11 +1,20 @@
-import { HistoryIcon, HouseIcon, SettingsIcon, SunIcon } from "lucide-react";
+import { HistoryIcon, HouseIcon, MoonIcon, SettingsIcon, SunIcon } from "lucide-react";
 import styles from "./styles.module.css";
 import { useEffect, useState } from "react";
 
 export function Menu() {
   type AvailableTheme = "dark" | "light";
 
-  const [theme, setTheme] = useState<AvailableTheme>("dark");
+  const [theme, setTheme] = useState<AvailableTheme>(() => {
+    const storageTheme = localStorage.getItem('theme') as AvailableTheme || 'dark';
+
+    return storageTheme;
+  });
+
+  const nextThemeIcon = {
+    dark: <SunIcon />,
+    light: <MoonIcon />
+  }
 
   function handleThemeChange(event: React.MouseEvent) {
     event.preventDefault();
@@ -22,6 +31,8 @@ export function Menu() {
 
     document.documentElement.setAttribute("data-theme", theme);
 
+    localStorage.setItem('theme',theme);
+
     //este return é executado pelo useEffect antes mesmo de executar a ação dele. Serve para executar limpezas na página, como remover listerners, antes do componente ser atualizado
     return () => {
         console.log('Este componente será atualizado');
@@ -30,7 +41,6 @@ export function Menu() {
 
   return (
     <div className={styles.menu}>
-      <h1>{theme}</h1>
       <a
         className={styles.menuLink}
         href="#"
@@ -62,7 +72,7 @@ export function Menu() {
         title="Mudar Tema"
         onClick={handleThemeChange}
       >
-        <SunIcon />
+        {nextThemeIcon[theme]}
       </a>
     </div>
   );
