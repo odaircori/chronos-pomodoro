@@ -1,18 +1,18 @@
-import { PlayCircleIcon, StopCircleIcon } from "lucide-react";
-import { Cycles } from "../Cycles";
-import { DefaultButton } from "../DefaultButton";
-import { DefaultInput } from "../DefaultInput";
-import { useRef } from "react";
-import type { TaskModel } from "../../models/TaskModel.ts";
-import { useTaskContext } from "../../contexts/TaskContext/useTaskContext.tsx";
-import { getNextCycle } from "../../utils/getNextCycle.ts";
-import { getNextCycleType } from "../../utils/getNextCycleType.ts";
-import { formatSecondsToMinutes } from "../../utils/formatSecondsToMinutes.ts";
+import {PlayCircleIcon, StopCircleIcon} from "lucide-react";
+import {Cycles} from "../Cycles";
+import {DefaultButton} from "../DefaultButton";
+import {DefaultInput} from "../DefaultInput";
+import {useRef} from "react";
+import type {TaskModel} from "../../models/TaskModel.ts";
+import {useTaskContext} from "../../contexts/TaskContext/useTaskContext.tsx";
+import {getNextCycleType} from "../../utils/getNextCycleType.ts";
+import {getNextCycle} from "../../utils/getNextCycle.ts";
+import {TaskActionTypes} from "../../contexts/TaskContext/taskActionTypes.ts";
 
 export function MainForm() {
   const taskNameInput = useRef<HTMLInputElement>(null);
 
-  const { state, setState } = useTaskContext();
+  const { state, dispatch } = useTaskContext();
 
   const nextCycle = getNextCycle(state.currentCycle);
   const nextCycleType = getNextCycleType(nextCycle);
@@ -36,35 +36,12 @@ export function MainForm() {
       type: nextCycleType,
     };
 
-    const secondsRemaining = newTask.duration * 60;
-
-    setState((prevState) => {
-      return {
-        ...prevState,
-        activeTask: newTask,
-        currentCycle: nextCycle,
-        secondsRemaining: secondsRemaining,
-        formattedSecondsRemaining: formatSecondsToMinutes(secondsRemaining),
-        tasks: [...prevState.tasks, newTask],
-      };
-    });
+    dispatch({type: TaskActionTypes.START_TASK, payload: newTask});
   }
 
     function handleInterruptTask(): void {
-    setState((prevState) => {
-      return {
-        ...prevState,
-        activeTask: null,
-        secondsRemaining: 0,
-        formattedSecondsRemaining: '00:00',
-        tasks: prevState.tasks.map(task => {
-            if(task.id === prevState.activeTask?.id){
-                return {...task, interruptDate: Date.now()}
-            }
-                return task
-        })
-      };
-    })
+
+      dispatch({type: TaskActionTypes.INTERRUPT_TASK})
     }
 
   return (
