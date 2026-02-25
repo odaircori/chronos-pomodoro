@@ -9,6 +9,7 @@ import {getNextCycleType} from "../../utils/getNextCycleType.ts";
 import {getNextCycle} from "../../utils/getNextCycle.ts";
 import {TaskActionTypes} from "../../contexts/TaskContext/taskActionTypes.ts";
 import {Tips} from "../Tips";
+import {TimerWorkerManager} from "../../workers/TimerWorkerManager.ts";
 
 export function MainForm() {
   const taskNameInput = useRef<HTMLInputElement>(null);
@@ -39,8 +40,11 @@ export function MainForm() {
 
     dispatch({type: TaskActionTypes.START_TASK, payload: newTask});
 
-    const worker = new Worker(new URL("../../workers/timeWorker.js", import.meta.url));
+    const worker = TimerWorkerManager.getInstance();
     worker.postMessage('Oi Worker');
+    worker.onMessage((event) => {
+      console.log("Received message", event.data);
+    });
   }
 
     function handleInterruptTask(): void {
