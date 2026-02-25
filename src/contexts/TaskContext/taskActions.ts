@@ -5,11 +5,11 @@ export type TaskActionModel =
     |
     {
         type: TaskActionTypes.START_TASK,
-        payload: TaskModel
+        payload?: TaskModel
     } |
     {
         type: TaskActionTypes.INTERRUPT_TASK,
-        payload: TaskModel
+        payload?: TaskModel
     }
     |
     {

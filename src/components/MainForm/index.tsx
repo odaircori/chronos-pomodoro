@@ -8,6 +8,7 @@ import {useTaskContext} from "../../contexts/TaskContext/useTaskContext.tsx";
 import {getNextCycleType} from "../../utils/getNextCycleType.ts";
 import {getNextCycle} from "../../utils/getNextCycle.ts";
 import {TaskActionTypes} from "../../contexts/TaskContext/taskActionTypes.ts";
+import {Tips} from "../Tips";
 
 export function MainForm() {
   const taskNameInput = useRef<HTMLInputElement>(null);
@@ -41,7 +42,7 @@ export function MainForm() {
 
     function handleInterruptTask(): void {
 
-      dispatch({type: TaskActionTypes.INTERRUPT_TASK})
+      dispatch({type: TaskActionTypes.INTERRUPT_TASK, payload:state.activeTask})
     }
 
   return (
@@ -58,8 +59,7 @@ export function MainForm() {
       </div>
       <div className="formRow">
         <p>
-          Lorem ipsum dolor sit amet consectetur adipisicing elit. Dicta,
-          officiis!
+          <Tips />
         </p>
       </div>
 
