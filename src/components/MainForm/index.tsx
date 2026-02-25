@@ -38,6 +38,9 @@ export function MainForm() {
     };
 
     dispatch({type: TaskActionTypes.START_TASK, payload: newTask});
+
+    const worker = new Worker(new URL("../../workers/timeWorker.js", import.meta.url));
+    worker.postMessage('Oi Worker');
   }
 
     function handleInterruptTask(): void {
