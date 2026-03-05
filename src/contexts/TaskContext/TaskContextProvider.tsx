@@ -1,7 +1,9 @@
 import {useEffect, useReducer} from "react";
-import { initialTaskState } from "./initialTaskState";
-import { TaskContext } from "./TaskContext";
-import { taskReducer } from "./taskReducer.ts";
+import {initialTaskState} from "./initialTaskState";
+import {TaskContext} from "./TaskContext";
+import {taskReducer} from "./taskReducer.ts";
+import {TimerWorkerManager} from "../../workers/TimerWorkerManager.ts";
+import {TaskActionTypes} from "./taskActionTypes.ts";
 
 type TaskContextProviderProps = {
   children: React.ReactNode;
@@ -10,10 +12,29 @@ type TaskContextProviderProps = {
 export function TaskContextProvider({ children }: TaskContextProviderProps) {
   const [state, dispatch] = useReducer(taskReducer, initialTaskState);
 
+  const worker = TimerWorkerManager.getInstance();
+
+  worker.onMessage((event: MessageEvent) => {
+    const countDownSeconds = event.data;
+    console.log(countDownSeconds);
+
+    if(countDownSeconds <= 0) {
+      console.log("Worker finalizado porque a task completou");
+      dispatch({type: TaskActionTypes.COMPLETE_TASK});
+      worker.terminate();
+    }else{
+      dispatch({type: TaskActionTypes.COUNT_DOWN, payload: {secondsRemaining:countDownSeconds }});
+    }
+  })
 
   useEffect(() =>{
-    console.log(state);
-  },[state]);
+    if(!state.activeTask) {
+      console.log("Worker finalizado porque não existe taskAtiva");
+      worker.terminate();
+    }
+
+      worker.postMessage(state);
+  },[worker, state]);
 
   return (
     <TaskContext.Provider value={{ state, dispatch }}>

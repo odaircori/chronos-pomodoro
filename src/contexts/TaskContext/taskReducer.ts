@@ -1,4 +1,4 @@
-import type {TaskActionModel} from "./taskActions.ts";
+import {type TaskActionModel} from "./taskActions.ts";
 import type {TaskStateModel} from "../../models/TaskStateModel.ts";
 import {getNextCycle} from "../../utils/getNextCycle.ts";
 import {TaskActionTypes} from "./taskActionTypes.ts";
@@ -15,7 +15,7 @@ export function taskReducer(state: TaskStateModel, action: TaskActionModel): Tas
                 ...state,
                 activeTask: newTask,
                 currentCycle: nextCycle,
-                secondsRemaining:secondsRemaining,
+                secondsRemaining: secondsRemaining,
                 formattedSecondsRemaining: formatSecondsToMinutes(secondsRemaining),
                 tasks: [...state.tasks, newTask],
             };
@@ -28,10 +28,32 @@ export function taskReducer(state: TaskStateModel, action: TaskActionModel): Tas
                 secondsRemaining: 0,
                 formattedSecondsRemaining: "00:00",
                 tasks: state.tasks.map(task => {
-                    if(task.id === state.activeTask?.id){
+                    if (task.id === state.activeTask?.id) {
                         return {...task, interruptDate: Date.now()}
                     }
-                        return task
+                    return task
+                })
+            };
+
+        case TaskActionTypes.RESET_STATE:
+            return state;
+        case TaskActionTypes.COUNT_DOWN:
+            return {
+                ...state,
+                secondsRemaining: action.payload.secondsRemaining,
+                formattedSecondsRemaining: formatSecondsToMinutes(action.payload.secondsRemaining)
+            }
+        case TaskActionTypes.COMPLETE_TASK:
+            return {
+                ...state,
+                activeTask: null,
+                secondsRemaining: 0,
+                formattedSecondsRemaining: "00:00",
+                tasks: state.tasks.map(task => {
+                    if (task.id === state.activeTask?.id) {
+                        return {...task, completeDate: Date.now()}
+                    }
+                    return task
                 })
             };
     }
