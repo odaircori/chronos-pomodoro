@@ -1,6 +1,7 @@
 import { HistoryIcon, HouseIcon, MoonIcon, SettingsIcon, SunIcon } from "lucide-react";
 import styles from "./styles.module.css";
 import { useEffect, useState } from "react";
+import {Link} from "react-router";
 
 export function Menu() {
   type AvailableTheme = "dark" | "light";
@@ -41,14 +42,14 @@ export function Menu() {
 
   return (
     <div className={styles.menu}>
-      <a
+      <Link
         className={styles.menuLink}
-        href="#"
+        to="/"
         aria-label="Ir para Home"
         title="Ir para Home"
       >
         <HouseIcon />
-      </a>
+      </Link>
       <a
         className={styles.menuLink}
         href="#"
