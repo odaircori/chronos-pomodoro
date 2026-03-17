@@ -9,6 +9,7 @@ import {getNextCycleType} from "../../utils/getNextCycleType.ts";
 import {getNextCycle} from "../../utils/getNextCycle.ts";
 import {TaskActionTypes} from "../../contexts/TaskContext/taskActionTypes.ts";
 import {Tips} from "../Tips";
+import {showMessage} from "../../adapters/showMessage.ts";
 
 export function MainForm() {
   const taskNameInput = useRef<HTMLInputElement>(null);
@@ -25,7 +26,10 @@ export function MainForm() {
 
     const taskName = taskNameInput.current.value;
 
-    if (taskName.trim() === "") return;
+    if(!taskName){
+      showMessage.warn("Digite o nome da tarefa!");
+      return;
+    }
 
     const newTask: TaskModel = {
       id: Date.now().toString(),
@@ -39,11 +43,15 @@ export function MainForm() {
 
     dispatch({type: TaskActionTypes.START_TASK, payload: newTask});
 
+    showMessage.info("Tarefa iniciada!");
+
   }
 
     function handleInterruptTask(): void {
+      showMessage.dismiss();
+      showMessage.warn("Tarefa interrompida!");
 
-      dispatch({type: TaskActionTypes.INTERRUPT_TASK, payload:state.activeTask})
+      dispatch({type: TaskActionTypes.INTERRUPT_TASK})
     }
 
   return (
