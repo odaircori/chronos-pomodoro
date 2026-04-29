@@ -5,13 +5,29 @@ import {taskReducer} from "./taskReducer.ts";
 import {TimerWorkerManager} from "../../workers/TimerWorkerManager.ts";
 import {TaskActionTypes} from "./taskActionTypes.ts";
 import {loadBeep} from "../../utils/loadBeep.ts";
+import type {TaskStateModel} from "../../models/TaskStateModel.ts";
 
 type TaskContextProviderProps = {
   children: React.ReactNode;
 };
 
 export function TaskContextProvider({ children }: TaskContextProviderProps) {
-  const [state, dispatch] = useReducer(taskReducer, initialTaskState);
+  const [state, dispatch] = useReducer(taskReducer, initialTaskState, () => {
+    const storageState = localStorage.getItem('state');
+
+    if(!storageState){
+      return initialTaskState;
+    }
+
+    const parsedStorageState = JSON.parse(storageState) as TaskStateModel;
+
+    return {
+      ...parsedStorageState,
+      activeTask: null,
+      secondsRemaining: 0,
+      formattedSecondsRemaining: '00:00'
+    }
+  });
 
   const worker = TimerWorkerManager.getInstance();
   const playBeepRef = useRef<ReturnType<typeof loadBeep> | null>(null);
@@ -35,6 +51,8 @@ export function TaskContextProvider({ children }: TaskContextProviderProps) {
   })
 
   useEffect(() =>{
+    localStorage.setItem("state", JSON.stringify(state));
+
     if(!state.activeTask) {
       console.log("Worker finalizado porque não existe taskAtiva");
       worker.terminate();
